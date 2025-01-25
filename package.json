@@ -4,7 +4,7 @@
   "description": "A proxy serverless function for Aliyun FC.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Pectics/proxy.peckot.com.git"
+    "url": "https://github.com/PeckotStudios/proxy.peckot.com.git"
   },
   "author": "Pectics",
   "license": "MIT",
