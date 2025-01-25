@@ -1,0 +1,14 @@
+{
+  "name": "proxy.peckot.com",
+  "version": "1.0.0",
+  "description": "A proxy serverless function for Aliyun FC.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pectics/proxy.peckot.com.git"
+  },
+  "author": "Pectics",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.9"
+  }
+}
