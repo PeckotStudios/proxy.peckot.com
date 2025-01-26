@@ -23,12 +23,15 @@ exports.handler = async (eventBuffer, _) => {
         url.search = params.toString();
 
         // Forward the request
-        const response = await fetch(url.toString(), {
-            method: event?.requestContext?.http?.method || 'GET',
-            headers: headers,
-            body: event?.isBase64Encoded ?
+        const method = event?.requestContext?.http?.method || 'GET';
+        const body = ['GET', 'HEAD'].includes(method) ? null :
+            event?.isBase64Encoded ?
                 Buffer.from(event.body, 'base64').toString('utf-8') :
-                event.body || '',
+                event.body || '';
+        const response = await fetch(url.toString(), {
+            method: method,
+            headers: headers,
+            body: body,
         });
 
         return {
