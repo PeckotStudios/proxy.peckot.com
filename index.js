@@ -3,7 +3,12 @@ exports.handler = async (event, _) => {
     try {
         const eventObj = JSON.parse(event.toString());
         const headers = eventObj.headers;
-        const body = eventObj.body;
+        const apikey = headers?.['Authorization'];
+        if (process.env.API_KEY && apikey !== process.env.API_KEY)
+            return {
+                statusCode: 403,
+                body: 'Forbidden'
+            };
         const targetUrl = headers?.['X-Forward-To'];
         if (!targetUrl) {
             console.error('Missing X-Forward-To header');
@@ -13,6 +18,7 @@ exports.handler = async (event, _) => {
             };
         }
         delete headers['X-Forward-To'];
+        const body = eventObj.body;
         const requestBody = eventObj.isBase64Encoded ?
             new Buffer.from(body, 'base64') :
             Buffer.from(body, 'utf-8');
