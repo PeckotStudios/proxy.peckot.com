@@ -1,18 +1,18 @@
 const axios = require('axios');
-exports.redirector = async (event, _) => {
+exports.handler = async (event, _) => {
     try {
         const eventObj = JSON.parse(event.toString());
         const headers = eventObj.headers;
         const body = eventObj.body;
-        const targetUrl = headers?.['X-Api-Redirect'];
+        const targetUrl = headers?.['X-Forward-To'];
         if (!targetUrl) {
-            console.error('Missing X-Api-Redirect header');
+            console.error('Missing X-Forward-To header');
             return {
                 statusCode: 400,
-                body: 'Missing X-Api-Redirect header'
+                body: 'Missing X-Forward-To header'
             };
         }
-        delete headers['X-Api-Redirect'];
+        delete headers['X-Forward-To'];
         const requestBody = eventObj.isBase64Encoded ?
             new Buffer.from(body, 'base64') :
             Buffer.from(body, 'utf-8');
