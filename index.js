@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 exports.handler = async (eventBuffer, _) => {
     try {
         const event = JSON.parse(eventBuffer.toString());
