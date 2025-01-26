@@ -9,6 +9,6 @@
   "author": "Pectics",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.9"
+    "node-fetch": "^3.3.2"
   }
 }

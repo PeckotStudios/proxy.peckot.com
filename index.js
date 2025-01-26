@@ -1,38 +1,43 @@
-const axios = require('axios');
-exports.handler = async (event, _) => {
+const fetch = require('node-fetch');
+
+exports.handler = async (eventBuffer, _) => {
     try {
-        const eventObj = JSON.parse(event.toString());
-        const headers = eventObj.headers;
+        const event = JSON.parse(eventBuffer.toString());
+        const headers = event.headers;
+
+        // Check API Key
         const apikey = headers?.['Authorization'];
         if (process.env.API_KEY && apikey !== process.env.API_KEY)
             return {
                 statusCode: 403,
                 body: 'Forbidden'
             };
-        const targetUrl = headers?.['X-Forward-To'];
-        if (!targetUrl) {
-            console.error('Missing X-Forward-To header');
-            return {
-                statusCode: 400,
-                body: 'Missing X-Forward-To header'
-            };
-        }
+
+        // Parse the target URL
+        const url = new URL(headers['X-Forward-To']);
         delete headers['X-Forward-To'];
-        const body = eventObj.body;
-        const requestBody = eventObj.isBase64Encoded ?
-            new Buffer.from(body, 'base64') :
-            Buffer.from(body, 'utf-8');
-        const res = await axios({
-            method: eventObj.httpMethod,
-            url: targetUrl,
+
+        // Merge query parameters
+        const params = new URLSearchParams(url.search);
+        const override = event.queryParameters;
+        for (const key in override)
+            params.set(key, override[key]);
+        url.search = params.toString();
+
+        // Forward the request
+        const response = await fetch(url.toString(), {
+            method: event?.requestContext?.http?.method || 'GET',
             headers: headers,
-            data: requestBody
+            body: event?.isBase64Encoded ?
+                Buffer.from(event.body, 'base64').toString('utf-8') :
+                event.body || '',
         });
+
         return {
-            statusCode: res.status,
-            headers: res.headers,
-            body: res.data,
-            isBase64Encoded: false
+            statusCode: response.status,
+            headers: response.headers.raw(),
+            body: await response.text(),
+            isBase64Encoded: false,
         };
     } catch (error) {
         console.error(error);
