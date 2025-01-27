@@ -24,7 +24,8 @@ exports.handler = async (eventBuffer, _) => {
 
         // Forward the request
         const method = event?.requestContext?.http?.method || 'GET';
-        const body = ['GET', 'HEAD'].includes(method) ? null :
+        const body = ['GET', 'HEAD'].includes(method) ?
+            (delete headers['Content-Length'], null) :
             event?.isBase64Encoded ?
                 Buffer.from(event.body, 'base64').toString('utf-8') :
                 event.body || '';
